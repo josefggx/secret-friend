@@ -10,4 +10,7 @@ Rails.application.routes.draw do
 
   get '/workers', to: "workers#index"
   post '/workers', to: "workers#create"
+
+  get '/games', to: "games#index"
+  post '/games', to: "games#create"
 end

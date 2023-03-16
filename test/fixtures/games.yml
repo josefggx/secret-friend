@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  year_game: 1
+  workers: one
+
+two:
+  year_game: 1
+  workers: two

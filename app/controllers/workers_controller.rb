@@ -1,20 +1,24 @@
 class WorkersController < ApplicationController
   def index
     @workers = Worker.all
-    render json: { data: @workers }
   end
 
   def create
     @worker = Worker.create(worker_params)
-    render json: {
-      "data": {
-        "id": @worker.id,
-        "name": @worker.name,
-        "location": @worker.location.name,
-        "year_in_work": @worker.year_in_work,
-        # "worker_couples": [],
-      }
-    }
+
+    if @worker.save
+      @worker
+    else
+      @errors = @worker.errors.full_messages
+      render json: {
+        "error": {
+          "message": @errors[0],
+          "code": 002,
+          "object": "worker",
+          "index": 0
+        }
+      }, status: :unprocessable_entity
+    end
   end
 
   private
