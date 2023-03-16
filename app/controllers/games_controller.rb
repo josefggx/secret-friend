@@ -5,22 +5,22 @@ class GamesController < ApplicationController
 
   def create
     @game = Game.create(game_params) do |game|
-      game.available_workers = Worker.order("random()").all
+      puts "year game: #{game_params[:year_game]}"
+
+      last_worker_without_play_id = Game.where(year_game: last_year).first&.worker_without_play&.id
+      next_worker_without_play_id = Game.where(year_game: next_year).first&.worker_without_play&.id
+
+      # last_worker_without_play_id = 1
+      # next_worker_without_play_id = 1
+
+      puts "last year without play: #{last_worker_without_play_id}"
+      puts "next year without play: #{next_worker_without_play_id}"
+
+      prepended_ids = [last_worker_without_play_id.to_i, next_worker_without_play_id.to_i]
+      game.available_workers = Worker.order(Arel.sql("#{"CASE WHEN (id IN (#{prepended_ids.join(',')})) THEN 0 ELSE 1 END ASC" if prepended_ids.present?}, id"))
+
+      # game.available_workers = Worker.order("random()").all
     end
-
-    puts "year game: #{game_params[:year_game]}"
-
-    last_year = (game_params[:year_game].to_i - 1).to_s
-    last_worker_without_play = Game.where(year_game: last_year).first&.worker_without_play
-    next_year = (game_params[:year_game].to_i + 1).to_s
-    next_worker_without_play = Game.where(year_game: next_year).first&.worker_without_play
-
-    puts "last year without play: #{last_worker_without_play}"
-    puts "next year without play: #{next_worker_without_play}"
-    # puts  Game.where(year_game: [last_year, next_year])
-
-    # TODO: Tenemos que hacer que last y next worker_without_play sean los primeros
-    #       cuando recorremos @game.available_workers
 
     available_workers_ids = @game.available_workers.map { |worker| worker.id }
     game_couples = []
@@ -37,8 +37,7 @@ class GamesController < ApplicationController
       puts "options #{index}: #{couple_options.to_s}"
       if couple_options.size > 0
         couple_pick = @game.available_workers.find(couple_options.sample)
-        couple = {
-          first_player_name: worker.name, first_player_id: worker.id,
+        couple = { first_player_name: worker.name, first_player_id: worker.id,
           second_player_name: couple_pick.name, second_player_id: couple_pick.id }
         workers_already_coupled.push(worker.id, couple_pick.id)
         @game.couples << couple
@@ -51,14 +50,8 @@ class GamesController < ApplicationController
       @game
     else
       @errors = @game.errors.full_messages.first
-      render json: {
-        "error": {
-          "message": @errors,
-          "code": 002,
-          "object": "game",
-          "index": 0
-        }
-      }, status: :unprocessable_entity
+      render json: { "error": { "message": @errors, "code": 002, "object": "game", "index": 0 } },
+             status: :unprocessable_entity
     end
   end
 
@@ -66,5 +59,13 @@ class GamesController < ApplicationController
 
   def game_params
     params.require(:game).permit(:year_game)
+  end
+
+  def last_year
+    (game_params[:year_game].to_i - 1).to_s
+  end
+
+  def next_year
+    (game_params[:year_game].to_i + 1).to_s
   end
 end

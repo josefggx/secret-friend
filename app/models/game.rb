@@ -1,12 +1,14 @@
 class Game < ApplicationRecord
-  attr_accessor :available_workers, :couples, :worker_without_play
+  attr_accessor :available_workers, :couples
 
   def initialize(attributes = nil)
     super
     @couples = []
   end
 
-  has_many :worker_without_play, foreign_key: :id, class_name: 'Worker'
+  # has_many :worker_without_play, foreign_key: :id, class_name: 'Worker'
+  # has_one :worker_without_play, class_name: 'Worker', foreign_key: :id
+  # belongs_to :worker, class_name:"Worker", foreign_key: :id
 
   # validates :workers, :length => { :minimum => 2 }
 
@@ -15,9 +17,9 @@ class Game < ApplicationRecord
   validate :has_at_least_two_workers
 
   def worker_without_play
-    # Worker.find(self.worker_without_play_id)
-    worker = Worker.find(self.worker_without_play_id)
-    { id: worker.id, name: worker.name, location: worker.location.name }
+    Worker.find(self.worker_without_play_id) if self.worker_without_play_id
+    # worker = Worker.find(self.worker_without_play_id)
+    # OpenStruct.new(id: worker.id, name: worker.name, location: worker.location.name)
   end
 
   def has_at_least_two_workers
