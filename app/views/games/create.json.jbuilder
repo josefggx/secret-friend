@@ -1,11 +1,11 @@
 json.data do
   json.year_game @game.year_game
   # json.worker_without_play @game.worker_without_play.marshal_dump if @game.worker_without_play.present?
-  if @game.worker_without_play.present?
-    json.worker_without_play do
-      json.id @game.worker_without_play.id
-      json.name @game.worker_without_play.name
-      json.location @game.worker_without_play.location.name
+  json.worker_without_play do
+    if @game.not_playing_worker.present?
+      json.id @game.not_playing_worker.worker.id
+      json.name @game.not_playing_worker.worker.name
+      json.location @game.not_playing_worker.worker.location.name
     end
   end
   json.all_games do
