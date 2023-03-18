@@ -7,8 +7,8 @@ class GamesController < ApplicationController
     @game = Game.create(game_params) do |game|
       puts "year game: #{game_params[:year_game]}"
 
-      @last_worker_without_play_id = Game.where(year_game: last_year).first&.not_playing_worker&.worker&.id
-      @next_worker_without_play_id = Game.where(year_game: next_year).first&.not_playing_worker&.worker&.id
+      @last_worker_without_play_id = Game.where(year_game: last_year).first&.worker_without_play_id
+      @next_worker_without_play_id = Game.where(year_game: next_year).first&.worker_without_play_id
 
       # @last_worker_without_play_id = 1
       # @next_worker_without_play_id = 3
@@ -16,35 +16,38 @@ class GamesController < ApplicationController
       puts "last year without play: #{@last_worker_without_play_id}"
       puts "next year without play: #{@next_worker_without_play_id}"
 
-      prepended_ids = [@last_worker_without_play_id.to_i, @next_worker_without_play_id.to_i]
-      game.available_workers = Worker.order(Arel.sql("#{"CASE WHEN (id IN (#{prepended_ids.join(',')})) THEN 0 ELSE 1 END ASC" if prepended_ids.present?}, id"))
-
       # game.available_workers = Worker.order("random()").all
     end
 
-    available_workers_ids = @game.available_workers.map { |worker| worker.id }
+    prepended_ids = [@last_worker_without_play_id.to_i, @next_worker_without_play_id.to_i]
+    # available_workers = Worker.order(Arel.sql("#{"CASE WHEN (id IN (#{prepended_ids.join(',')})) THEN 0 ELSE 1 END ASC" if prepended_ids.present?}, id"))
+    # available_workers = Worker.order(Arel.sql("ARRAY_POSITION(ARRAY#{prepended_ids}, id), name ASC")).all
+    available_workers = Worker.order(Arel.sql("ARRAY_POSITION(ARRAY#{prepended_ids}, id),
+          CASE WHEN id IN (#{prepended_ids.join(',')}) THEN 0 ELSE random() END")).all
+
+    available_workers_ids = available_workers.map { |worker| worker.id }
     puts "List: #{available_workers_ids}"
     game_couples = []
     workers_already_coupled = []
     not_play = nil
 
-    @game.available_workers.each_with_index do |worker, index|
+    available_workers.each_with_index do |worker, index|
       puts "worker_id: #{worker.id}"
       puts "already coupled #{index}: #{workers_already_coupled.to_s}"
       next if workers_already_coupled.include?(worker.id)
 
       couple_options = available_workers_ids - ([worker.id] + workers_already_coupled)
-      # puts "options #{index}: #{couple_options.to_s}"
-      # puts "Clase de las opciones: #{couple_options[0]} #{couple_options[0].class}"
-      # puts "Clase de del next year: #{@next_worker_without_play_id} #{@next_worker_without_play_id.class}"
+      puts "options #{index}: #{couple_options.to_s}"
+      puts "Clase de las opciones: #{couple_options[0]} #{couple_options[0].class}"
+      puts "Clase de del next year: #{@next_worker_without_play_id} #{@next_worker_without_play_id.class}"
 
       if couple_options.size > 0
           couple_pick = if @next_worker_without_play_id.in?(couple_options)
-                          # puts 'ELEGI AL DEL AÑO SIGUIENTE'
-                          @game.available_workers.find(@next_worker_without_play_id)
+                          puts 'ELEGI AL DEL AÑO SIGUIENTE'
+                          available_workers.find(@next_worker_without_play_id)
                         else
-                          # puts 'ELEGI AL AZAR'
-                          @game.available_workers.find(couple_options.sample)
+                          puts 'ELEGI AL AZAR'
+                          available_workers.find(couple_options.sample)
                         end
           puts "pick #{couple_pick.to_json}"
         couple = { first_player_name: worker.name, first_player_id: worker.id,
@@ -52,8 +55,9 @@ class GamesController < ApplicationController
         workers_already_coupled.push(worker.id, couple_pick.id)
         @game.couples << couple
       else
-        # @game.not_playing_worker_id = worker.id
-        NotPlayingWorker.create(game_id: @game.id, worker_id: worker.id).save
+        @game.worker_without_play_id = worker.id
+        # @game.includes(:worker_without_play)
+        # NotPlayingWorker.create(game_id: @game.id, worker_id: worker.id).save
       end
     end
 
