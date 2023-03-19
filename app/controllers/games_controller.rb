@@ -20,8 +20,6 @@ class GamesController < ApplicationController
     end
 
     prepended_ids = [@last_worker_without_play_id.to_i, @next_worker_without_play_id.to_i]
-    # available_workers = Worker.order(Arel.sql("#{"CASE WHEN (id IN (#{prepended_ids.join(',')})) THEN 0 ELSE 1 END ASC" if prepended_ids.present?}, id"))
-    # available_workers = Worker.order(Arel.sql("ARRAY_POSITION(ARRAY#{prepended_ids}, id), name ASC")).all
     available_workers = Worker.order(Arel.sql("ARRAY_POSITION(ARRAY#{prepended_ids}, id),
           CASE WHEN id IN (#{prepended_ids.join(',')}) THEN 0 ELSE random() END")).all
 
@@ -50,10 +48,11 @@ class GamesController < ApplicationController
                           available_workers.find(couple_options.sample)
                         end
           puts "pick #{couple_pick.to_json}"
-        couple = { first_player_name: worker.name, first_player_id: worker.id,
-          second_player_name: couple_pick.name, second_player_id: couple_pick.id }
+        # couple = { first_player_name: worker.name, first_player_id: worker.id,
+        #   second_player_name: couple_pick.name, second_player_id: couple_pick.id }
         workers_already_coupled.push(worker.id, couple_pick.id)
-        @game.couples << couple
+        # @game.couples << couple
+          Couple.create(first_worker: worker, second_worker: couple_pick, game_id: @game.id, year_game: @game.year_game)
       else
         @game.worker_without_play_id = worker.id
         # @game.includes(:worker_without_play)

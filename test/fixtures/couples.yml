@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  first_worker: one
+  second_worker: one
+  game: one
+
+two:
+  first_worker: two
+  second_worker: two
+  game: two
