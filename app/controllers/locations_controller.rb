@@ -7,19 +7,10 @@ class LocationsController < ApplicationController
     @location = Location.create(location_params)
 
     if @location.save
-      @location
+      render 'locations/create', status: :created
     else
-      @errors = @location.errors.full_messages
-      render json: @location.errors, status: :unprocessable_entity
-      # render json: {
-      #   "errors": {
-      #     "message": @errors,
-      #     "code": 002,
-      #     "object": "worker",
-      #     "index": 0
-      #   }
-      # }, status: :unprocessable_entity
-      end
+      render 'errors/error', locals: { object: @location }, status: :unprocessable_entity
+    end
   end
 
   private

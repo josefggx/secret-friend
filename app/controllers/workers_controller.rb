@@ -7,17 +7,9 @@ class WorkersController < ApplicationController
     @worker = Worker.create(worker_params)
 
     if @worker.save
-      @worker
+      render 'workers/create', status: :created
     else
-      @errors = @worker.errors.full_messages
-      render json: {
-        "error": {
-          "message": @errors[0],
-          "code": 002,
-          "object": "worker",
-          "index": 0
-        }
-      }, status: :unprocessable_entity
+      render 'errors/error', locals: { object: @worker }, formats: :json, status: :unprocessable_entity
     end
   end
 

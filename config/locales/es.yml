@@ -5,8 +5,8 @@ es:
         one: "Empleado"
         other: "Empleados"
       location:
-        one: "Ubicación"
-        other: "Ubicaciones"
+        one: "Área de trabajo"
+        other: "Áreas de trabajo"
       game:
         one: "Juego"
         other: "Juegos"
@@ -16,52 +16,45 @@ es:
     attributes:
       worker:
         name: "Nombre"
-        location: "Ubicación"
+        location: "Área de trabajo"
+        location_id: "ID del área de trabajo"
       location:
         name: "Nombre"
-        required: "debe ser proporcionada"
       game:
         year_game: "Año del juego"
         worker_without_play_id: "ID del empleado sin jugar"
+        workers: 'Empleados'
+        couples: 'Parejas'
       couple:
         first_worker_id: "ID del primer empleado"
         second_worker_id: "ID del segundo empleado"
         game_id: "ID del juego"
-      id: "ID"
+#      id: "ID"
     errors:
       messages:
-        blank: "no puede estar en blanco"
-        taken: "ya ha sido tomado/a"
+        blank: "debe ser proporcionado"
+        taken: "ya existe, debe ser único"
+        too_short: "es demasiado corto (mínimo %{count} caracteres)"
+        record_invalid: "La validación falló: %{errors}"
       models:
         worker:
           attributes:
             name:
-              blank: "debes escribir un nombre"
+              blank: "del empleado debe ser proporcionado"
+              invalid: "del empleado solo permite letras y números"
             location:
-              blank: "debe existir una ubicación"
-              required: "debe ser proporcionada"
+              required: "debe existir"
         location:
           attributes:
             name:
-              blank: "no puede estar en blanco"
-              taken: "ya ha sido tomado/a"
-              invalid: "sólo permite letras y números"
+              invalid: "del área solo permite letras y números"
         game:
           attributes:
             year_game:
               not_a_number: "debe ser un número"
-              not_in_range: "sólo permite años entre 2023 y 2032"
-              taken: "ya existe un juego con este año"
-            available_workers: "Debe haber al menos 2 empleados para jugar."
-            couples: "Debe haber al menos una pareja para jugar."
-        couple:
-          attributes:
-            first_worker: "no puede estar en blanco"
-            second_worker: "no puede estar en blanco"
-            game: "no puede estar en blanco"
-            second_worker_id:
-              taken: "ya está en una pareja con este empleado"
-            first_worker_id:
-              taken: "ya está en una pareja con este empleado"
-            second_worker_id:
-              not_equal_to: "debe ser diferente del primer empleado"
+              in: "debe estar dentro de los años %{count}"
+              taken: "ya existe. Solo se permite un juego por año"
+            workers:
+              workers_required: "debe tener al menos 2 registros para jugar"
+            couples:
+              couples_required: "insuficientes. No se pudieron generar parejas válidas para este año"
