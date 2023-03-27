@@ -9,7 +9,7 @@ class Worker < ApplicationRecord
   has_many :games
   has_many :couples,
            ->(worker) { unscope(:where).where('first_worker_id = :id OR second_worker_id = :id', id: worker.id) },
-            through: :games
+           through: :games
 
   def self.order_by_without_play_first(last_and_next_worker_without_play_ids)
     order(Arel.sql("ARRAY_POSITION(ARRAY#{last_and_next_worker_without_play_ids}, id),
