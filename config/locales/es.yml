@@ -29,7 +29,6 @@ es:
         first_worker_id: "ID del primer empleado"
         second_worker_id: "ID del segundo empleado"
         game_id: "ID del juego"
-#      id: "ID"
     errors:
       messages:
         blank: "debe ser proporcionado"

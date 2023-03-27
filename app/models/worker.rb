@@ -9,13 +9,16 @@ class Worker < ApplicationRecord
   has_many :games
   has_many :couples,
            ->(worker) { unscope(:where).where('first_worker_id = :id OR second_worker_id = :id', id: worker.id) },
-           through: :games
+            through: :games
 
-  def find_restricted_partner_ids(year)
-    [year - 2, year - 1, year + 1, year + 2].map { |specific_year| find_partner_for_year(specific_year)&.id }
+  def self.order_by_without_play_first(last_and_next_worker_without_play_ids)
+    order(Arel.sql("ARRAY_POSITION(ARRAY#{last_and_next_worker_without_play_ids}, id),
+    CASE WHEN id IN (#{last_and_next_worker_without_play_ids.join(',')}) THEN 0 ELSE random() END"))
   end
 
-  private
+  def find_restricted_partners_ids(year)
+    [year - 2, year - 1, year + 1, year + 2].map { |specific_year| find_partner_for_year(specific_year)&.id }
+  end
 
   def find_partner_for_year(year)
     couple = couples.where(games: { year_game: year }).first

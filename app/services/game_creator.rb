@@ -20,17 +20,15 @@ class GameCreator
   attr_reader :game_params
 
   def find_available_workers
-    last_and_next_worker_without_play_ids = [last_worker_without_play_id.to_i, next_worker_without_play_id.to_i]
-    Worker.order(Arel.sql("ARRAY_POSITION(ARRAY#{last_and_next_worker_without_play_ids}, id),
-    CASE WHEN id IN (#{last_and_next_worker_without_play_ids.join(',')}) THEN 0 ELSE random() END")).all
+    workers_without_play_ids = [last_worker_without_play_id, next_worker_without_play_id]
+    Worker.order_by_without_play_first(workers_without_play_ids).all
   end
 
   def generate_all_couples(game)
     @available_workers.each do |worker|
       next if @workers_already_coupled.include?(worker.id)
 
-      couple_options = @available_workers_ids -
-                       ([worker.id] + @workers_already_coupled + worker.find_restricted_partner_ids(actual_year))
+      couple_options = find_couple_options(worker)
 
       if couple_options.any?
         generate_couple_for_worker(worker, game, couple_options)
@@ -55,23 +53,19 @@ class GameCreator
     end
   end
 
+  def find_couple_options(worker)
+    @available_workers_ids - ([worker.id] + @workers_already_coupled + worker.find_restricted_partners_ids(actual_year))
+  end
+
   def next_worker_without_play_id
-    Game.where(year_game: next_year).first&.worker_without_play_id
+    Game.where(year_game: actual_year + 1).first&.worker_without_play_id.to_i
   end
 
   def last_worker_without_play_id
-    Game.where(year_game: last_year).first&.worker_without_play_id
+    Game.where(year_game: actual_year - 1).first&.worker_without_play_id.to_i
   end
 
   def actual_year
     game_params[:year_game].to_i
-  end
-
-  def last_year
-    (game_params[:year_game].to_i - 1).to_s
-  end
-
-  def next_year
-    (game_params[:year_game].to_i + 1).to_s
   end
 end
