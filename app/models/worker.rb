@@ -24,8 +24,6 @@ class Worker < ApplicationRecord
     game = Game.find_by_year_game(year)
     return nil unless game
 
-    Couple.where(game_id: game.id)
-          .where('first_worker_id = ? OR second_worker_id = ?', id, id)
-          .first
+    Couple.where(game_id: game.id).where('first_worker_id = ? OR second_worker_id = ?', id, id).first
   end
 end
