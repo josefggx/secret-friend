@@ -6,8 +6,4 @@ class Couple < ApplicationRecord
   belongs_to :first_worker, class_name: 'Worker', foreign_key: 'first_worker_id'
   belongs_to :second_worker, class_name: 'Worker', foreign_key: 'second_worker_id'
   belongs_to :game
-
-  # TODO: Revisar si esta línea de abajo nos es útil
-  delegate :year_game, to: :game, prefix: true
 end
-

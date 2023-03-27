@@ -43,8 +43,7 @@ class GameCreator
   def generate_couple_for_worker(worker, game, couple_options)
     couple_pick = pick_partner(couple_options)
     @workers_already_coupled.push(worker.id, couple_pick.id)
-    couple = Couple.create(first_worker: worker, second_worker: couple_pick,
-                           game_id: game.id, year_game: game.year_game)
+    couple = Couple.create(first_worker: worker, second_worker: couple_pick, game_id: game.id)
     game.couples << couple
   end
 
