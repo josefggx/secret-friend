@@ -28,6 +28,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_18_233956) do
 
   create_table "games", force: :cascade do |t|
     t.integer "year_game"
+    t.text "workers", default: [], array: true
     t.bigint "worker_without_play_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
