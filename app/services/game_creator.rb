@@ -20,7 +20,7 @@ class GameCreator
   attr_reader :game_params
 
   def find_and_order_all_workers
-    workers_without_play_ids = [last_without_play_id, next_without_play_id]
+    workers_without_play_ids = [last_without_play_id.to_i, next_without_play_id.to_i]
     Worker.order_by_without_play_first(workers_without_play_ids).all
   end
 
@@ -50,17 +50,17 @@ class GameCreator
   end
 
   def pick_partner(couple_options)
-    return @all_workers.find(next_without_play_id) if next_without_play_id.in?(couple_options)
+    return @all_workers.find(next_without_play_id.to_i) if next_without_play_id.in?(couple_options)
 
     @all_workers.find(couple_options.sample)
   end
 
   def next_without_play_id
-    Game.where(year_game: actual_year + 1).first&.worker_without_play_id.to_i
+    Game.where(year_game: actual_year + 1).first&.worker_without_play_id
   end
 
   def last_without_play_id
-    Game.where(year_game: actual_year - 1).first&.worker_without_play_id.to_i
+    Game.where(year_game: actual_year - 1).first&.worker_without_play_id
   end
 
   def actual_year

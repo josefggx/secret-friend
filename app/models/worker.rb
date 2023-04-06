@@ -1,5 +1,5 @@
 class Worker < ApplicationRecord
-  validates :name, presence: true, format: { with: /\A[a-zA-Z0-9\s]+\z/ }, length: { minimum: 3 }
+  validates :name, presence: true, format: { with: /\A[a-zA-Z0-9\s]+\z/ }, length: { in: 3..30 }
   validates :location_id, presence: true
 
   belongs_to :location
@@ -11,9 +11,9 @@ class Worker < ApplicationRecord
            ->(worker) { unscope(:where).where('first_worker_id = :id OR second_worker_id = :id', id: worker.id) },
            through: :games
 
-  def self.order_by_without_play_first(last_and_next_worker_without_play_ids)
-    order(Arel.sql("ARRAY_POSITION(ARRAY#{last_and_next_worker_without_play_ids}, id),
-    CASE WHEN id IN (#{last_and_next_worker_without_play_ids.join(',')}) THEN 0 ELSE random() END"))
+  def self.order_by_without_play_first(workers_without_play_ids)
+    order(Arel.sql("ARRAY_POSITION(ARRAY#{workers_without_play_ids}, id),
+    CASE WHEN id IN (#{workers_without_play_ids.join(',')}) THEN 0 ELSE random() END"))
   end
 
   def find_restricted_partners_ids(year)

@@ -27,7 +27,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_18_233956) do
   end
 
   create_table "games", force: :cascade do |t|
-    t.integer "year_game"
+    t.integer "year_game", null: false
     t.text "workers", default: [], array: true
     t.bigint "worker_without_play_id"
     t.datetime "created_at", null: false
@@ -36,15 +36,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_18_233956) do
   end
 
   create_table "locations", force: :cascade do |t|
-    t.string "name"
+    t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "workers", force: :cascade do |t|
-    t.string "name"
-    t.string "year_in_work", default: "2023"
-    t.bigint "location_id"
+    t.string "name", null: false
+    t.string "year_in_work", default: "2023", null: false
+    t.bigint "location_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["location_id"], name: "index_workers_on_location_id"

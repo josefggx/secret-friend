@@ -30,6 +30,9 @@ gem "jbuilder"
 # Static code analyzer and code formatter
 gem 'rubocop'
 
+# Debugging helper
+gem 'byebug'
+
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
 

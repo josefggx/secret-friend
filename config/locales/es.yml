@@ -34,6 +34,7 @@ es:
         blank: "debe ser proporcionado"
         taken: "ya existe, debe ser único"
         too_short: "es demasiado corto (mínimo %{count} caracteres)"
+        too_long: "es demasiado largo (máximo %{count} caracteres)"
         record_invalid: "La validación falló: %{errors}"
       models:
         worker:
