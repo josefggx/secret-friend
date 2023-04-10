@@ -1,9 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
-  location: one
+worker_one:
+  name: Worker One
+  location: location_one
 
-two:
-  name: MyString
-  location: two
+worker_two:
+  name: Worker Two
+  location: location_two
+
+worker_three:
+  name: Worker Three
+  location: location_two

@@ -1,9 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  year_game: 1
-  workers: one
+game_one:
+  year_game: 2023
+  worker_without_play: worker_three
 
-two:
-  year_game: 1
-  workers: two
+game_two:
+  year_game: 2025
+  worker_without_play: worker_one
